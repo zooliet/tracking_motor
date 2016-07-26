@@ -21,7 +21,8 @@ Or install it yourself as:
 
 ## Usage
 
-TrackingMotor::Motor.new.move(x: 100, y: 100, duratin: 300)
+TrackingMotor::Motor.new(dev="/dev/tty.xxxxx")
+m.move(x = 100, y = 100, duratin: 300)
 
 ## Development
 
