@@ -21,6 +21,7 @@ class App < Thor
       else
         print(".")
       end
+      # p n
       m.move(x.to_i, y.to_i, dur.to_i)
       sleep(dur.to_f / 1000000)
       # sleep(dur.to_f / 1000000)
