@@ -38,7 +38,7 @@ module TrackingMotor
       dur = t.to_s.reverse.gsub(/...(?=.)/, '\&,').reverse
       x_axis = x.to_s.reverse.gsub(/...(?=.)/, '\&,').reverse
       y_axis = y.to_s.reverse.gsub(/...(?=.)/, '\&,').reverse
-      puts "Moving [x: #{x_axis}, y: #{y_axis}] in #{dur} µs"
+      # puts "Moving [x: #{x_axis}, y: #{y_axis}] in #{dur} µs"
 
       encoded = [x, y, t].pack("I*").unpack("C*")
 
