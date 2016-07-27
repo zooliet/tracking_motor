@@ -13,7 +13,7 @@ class App < Thor
   def motor(dev="/dev/tty.usbmodem1411", repeat = 1, x = 255, y = 255, dur = 1000000)
     # puts "#{repeat}, #{x}, #{y}, #{dur}"
     m = TrackingMotor::Motor.new(dev)
-    sleep 5 # in sec
+    sleep 3 # in sec
     start_time = Time.now.strftime("%H:%M:%S:%L")
     repeat.to_i.times do |n|
       if (n+1) % 100 == 0
