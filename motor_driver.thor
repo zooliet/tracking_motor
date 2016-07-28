@@ -1,5 +1,6 @@
 
 require 'tracking_motor'
+require 'timers'
 
 class App < Thor
   include Thor::Actions
@@ -15,10 +16,14 @@ class App < Thor
     devs = [Dir.glob("/dev/tty.usb*"), Dir.glob("/dev/ttyACM*")].flatten
     if devs.size > 0
       motor = TrackingMotor::Motor.new(dev = devs[0])
-      sleep 3 # in sec
     else
       puts "[Warning] Motor controller does not exist."
       exit
+    end
+
+    timers = Timers::Group.new
+    periodic_timer = timers.now_and_every(dur.to_f / 1000000) do
+      motor.move(x.to_i, y.to_i, dur.to_i)
     end
 
     start_time = Time.now.strftime("%H:%M:%S:%L")
@@ -28,12 +33,10 @@ class App < Thor
       else
         print(".")
       end
-      # p n
-      motor.move(x.to_i, y.to_i, dur.to_i)
-      sleep(dur.to_f / 1000000)
-      # sleep(dur.to_f / 1000000)
-      # m.move(-x.to_i, -y.to_i, dur.to_i)
+
+      timers.wait
     end
+    periodic_timer.cancel
     end_time = Time.now.strftime("%H:%M:%S:%L")
     puts "#{start_time} to #{end_time}"
   end

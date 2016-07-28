@@ -1,7 +1,5 @@
 module TrackingMotor
   class Motor
-    attr_reader :sp
-
     TABLE = [
          0,  94, 188, 226,  97,  63, 221, 131, 194, 156, 126,  32, 163, 253,  31,  65,
         157, 195,  33, 127, 252, 162,  64,  30,  95,   1, 227, 189,  62,  96, 130, 220,
@@ -22,17 +20,12 @@ module TrackingMotor
     ].freeze
 
     def initialize(dev = '/dev/tty.usbmodem1431', baud = 115200)
-      port_str = dev
-      # /dev/tty.usbserial
-      # /dev/ttyACM0
-      baud_rate = baud.to_i
-      data_bits = 8
-      stop_bits = 1
-      parity = SerialPort::NONE
-
-      @sp = SerialPort.new(port_str, baud_rate, data_bits, stop_bits, parity)
+      @port_str = dev
+      @baud_rate = baud.to_i
+      @data_bits = 8
+      @stop_bits = 1
+      @parity = SerialPort::NONE
     end
-
 
     def move(x = 255, y = 255, t = 1000000, rel = 0xff)
       dur = t.to_s.reverse.gsub(/...(?=.)/, '\&,').reverse
@@ -41,7 +34,6 @@ module TrackingMotor
       # puts "Moving [x: #{x_axis}, y: #{y_axis}] in #{dur} µs"
 
       encoded = [x, y, t].pack("I*").unpack("C*")
-
       buffer = [
         0xd5, 0x1A, 0x8e,
         encoded[0], encoded[1], encoded[2], encoded[3],
@@ -68,7 +60,9 @@ module TrackingMotor
       # crc8 = self.crc8_calc(buffer[2...-1])
       # buffer[buffer.length-1] = crc8
 
-      sp.write(buffer.pack("c*"))
+      SerialPort.open(@port_str, @baud_rate, @data_bits, @stop_bits, @parity) do |sp|
+        sp.write(buffer.pack("c*"))
+      end
     end
 
     def crc8_calc(data = [])
@@ -99,10 +93,6 @@ module TrackingMotor
     def send_is_finished
       buffer = [0xd5, 0x01, 0x0b, 0xff]
       send_packet(buffer)
-    end
-
-    def close
-      self.close
     end
   end
 end
